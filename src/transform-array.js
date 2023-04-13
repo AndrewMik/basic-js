@@ -13,10 +13,57 @@ const { NotImplementedError } = require('../extensions/index.js');
  * transform([1, 2, 3, '--discard-prev', 4, 5]) => [1, 2, 4, 5]
  * 
  */
-function transform(/* arr */) {
-  throw new NotImplementedError('Not implemented');
-  // remove line with error and write your code here
+function transform(arr) {
+  if(!Array.isArray(arr)){
+    throw new Error("'arr' parameter must be an instance of the Array!");
+  }
+
+  let result = JSON.parse(JSON.stringify(arr));
+
+  let controls = [
+    "--discard-next",
+    "--discard-prev",
+    "--double-next",
+    "--double-prev"
+  ];
+  
+  for(let i = 0; i < result.length; i++){
+    switch(result[i]){
+      case "--discard-next":
+        if(!controls.includes(result[i+1])){
+          if(result[i+1] !== undefined){
+            result.splice(i, 2, "undefined");
+          } else {
+            result.splice(i, 1, "undefined");
+          }
+        }
+        break;
+      case "--discard-prev":
+        if(!controls.includes(result[i-1])){
+          if(result[i-1] !== undefined){
+            result.splice(i-1, 2, "undefined");
+          } else {
+            result.shift();
+          }
+        }
+        break;
+      case "--double-next":
+        if(!controls.includes(result[i+1])){
+          result[i] = result[i+1];
+        }
+        break;
+      case "--double-prev":
+        if(!controls.includes(result[i-1])){
+          result[i] = result[i-1];
+        }
+        break;
+    }
+  }
+
+  return result.filter(element => element !== undefined && element !== "undefined");
 }
+ 
+
 
 module.exports = {
   transform
